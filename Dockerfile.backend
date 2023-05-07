@@ -1,0 +1,30 @@
+# Goの最新バージョン,alpine3.14をベースにする 
+FROM golang:1.20.4-alpine3.17 as builder 
+
+# 作業ディレクトリを設定 
+WORKDIR /speakbot-backend/src
+
+# アップデートとgitのインストール 
+RUN apk update && apk add git --no-cache git curl && chmod +x ${GOPATH}/bin/air
+# ホットリロード用のAirをインストール 
+RUN go install github.com/cosmtrek/air@latest 
+
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+RUN go install -v github.com/ramya-rao-a/go-outline@v0.0.0-20210608161538-9736a4bde949
+
+RUN go install -v golang.org/x/tools/gopls@latest
+
+
+COPY ./src .
+
+EXPOSE 8080
+
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-w -s" -o /main ./cmd
+
+FROM alpine:3.12
+
+COPY --from=builder /main .
+
+ENV PORT=${PORT}
+ENTRYPOINT ["/main web"]
