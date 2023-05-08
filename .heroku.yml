@@ -1,5 +1,10 @@
 build:
   docker:
-    web: Dockerfile.backend
+    web: Dockerfile.dep
+    worker:
+      dockerfile: Dockerfile.dep
+      target: builder
+release:
+  image: worker
 run:
-  web:   web: go build -o bin/main
+  web: /main

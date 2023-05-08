@@ -1,0 +1,14 @@
+# Goのビルドに不要なファイルやディレクトリを無視する
+.DS_Store
+.idea/
+.vscode/
+*.log
+*.test
+*.out
+*.prof
+*.trace
+*.cover
+
+# キャッシュを無視する
+go/pkg/
+go/bin/

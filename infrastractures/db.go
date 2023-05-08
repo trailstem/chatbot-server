@@ -14,8 +14,8 @@ import (
 // DB DSN取得処理
 func getDSN() string {
 	// //local用相対パス
-	// err := godotenv.Load(".env")
-	err := godotenv.Load("../.env")
+	err := godotenv.Load(".env")
+	// err := godotenv.Load("../.env")
 
 	if err != nil {
 		log.Fatal("Error loading .env file")
