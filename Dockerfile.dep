@@ -1,4 +1,3 @@
-# ベースイメージとして、GolangのAlpine Linuxを使用
 FROM golang:1.20.4-alpine3.17 as builder
 # 作業ディレクトリを設定
 WORKDIR /app
@@ -11,11 +10,8 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-w" -a -o /main ./cmd
 
 #ビルド後アプリ実行
-FROM alpine:alpine3.17
+FROM alpine:latest
 RUN apk update && apk add bash
-RUN apk --no-cache add ca-certificates
 COPY . .
 COPY --from=builder /main ./
-RUN chmod +x ./main
-EXPOSE 8080
-CMD ./main
+ENTRYPOINT ["/main"]
