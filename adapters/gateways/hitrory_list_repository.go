@@ -42,10 +42,17 @@ func (r *HisoryListRepository) FindChatDataList() (*[]domain.HistoryList, error)
 	var historyList []domain.HistoryList
 	for rows.Next() {
 		var history domain.HistoryList
-		err := rows.Scan(&history.ID, &history.UserInput, &history.BotResponse, &history.ResponseTimestamp)
+		var timestampStr string
+
+		err := rows.Scan(&history.ID, &history.UserInput, &history.BotResponse, &timestampStr)
 		if err != nil {
 			return nil, err
 		}
+		timestamp, err := time.Parse("2006-01-02 15:04:05", timestampStr)
+		if err != nil {
+			return nil, err
+		}
+		history.ResponseTimestamp = timestamp
 		historyList = append(historyList, history)
 	}
 	return &historyList, nil
