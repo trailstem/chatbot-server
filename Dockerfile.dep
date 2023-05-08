@@ -10,5 +10,5 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-w" -a -o /main ./c
 
 #ビルド後アプリ実行
 FROM scratch
-COPY --from=builder /app/cmd/main /main
+COPY --from=builder /app/main /main
 ENTRYPOINT ["/main"]
