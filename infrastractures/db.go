@@ -17,7 +17,7 @@ func getDSN() string {
 	// if err != nil {
 	// 	log.Fatal("Error loading .env file")
 	// }
-	dbURL := os.Getenv("JAWSDB_URL")
+	dbURL := os.Getenv("DATABASE_URL")
 	// dbURL := os.Getenv("LOCAL_MYSQL")
 	//フォーマット出力した文字列を返す
 	return fmt.Sprintf("%v", dbURL)
