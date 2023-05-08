@@ -10,14 +10,12 @@ COPY . .
 # 実行コマンドを設定
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-w" -a -o /main ./cmd
 
-# lsコマンドを追加
-RUN ls -a ./cmd
-
 #ビルド後アプリ実行
 FROM alpine:alpine3.17
 RUN apk update && apk add bash
+RUN apk --no-cache add ca-certificates
 COPY . .
 COPY --from=builder /main ./
-ENTRYPOINT ["/main"]
-
-
+RUN chmod +x ./main
+EXPOSE 8080
+CMD ./main
