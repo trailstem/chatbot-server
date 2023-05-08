@@ -15,20 +15,13 @@ import (
 func getDSN() string {
 	// //local用相対パス
 	err := godotenv.Load(".env")
-	// err := godotenv.Load("../.env")
-
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	user := os.Getenv("MYSQL_USER")
-	password := os.Getenv("MYSQL_PASSWORD")
-	host := os.Getenv("MYSQL_HOST")
-	port := os.Getenv("MYSQL_PORT")
-	dbName := os.Getenv("MYSQL_DATABASE")
-
+	// dbURL := os.Getenv("JAWSDB_URL")
+	dbURL := os.Getenv("LOCAL_MYSQL")
 	//フォーマット出力した文字列を返す
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		user, password, host, port, dbName)
+	return fmt.Sprintf("%v", dbURL)
 }
 
 // データベース接続処理
