@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	// "github.com/joho/godotenv"
@@ -15,18 +16,21 @@ import (
 func getDSN() string {
 	// //local用相対パス
 	// err := godotenv.Load(".env")
-	// if err != nil {
-	// 	log.Fatal("Error loading .env file")
-	// }
 	dbURL := os.Getenv("DATABASE_URL")
 	// dbURL := os.Getenv("LOCAL_MYSQL")
 
-	parsedURL, err := url.Parse(dbURL)
+	u, err := url.Parse(dbURL)
 	if err != nil {
 		log.Fatal("Error parsing JAWSDB_URL:", err)
 	}
 	//フォーマット出力した文字列を返す
-	return fmt.Sprintf("%v", parsedURL)
+	user := u.User.Username()
+	password, _ := u.User.Password()
+	host := u.Hostname()
+	port := u.Port()
+	database := strings.TrimPrefix(u.Path, "/")
+	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database)
+
 }
 
 // データベース接続処理
