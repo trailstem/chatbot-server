@@ -8,17 +8,18 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 	"github.com/trailstem/chatbot-server/domain"
 )
 
 // OpenWeatherAPIを使用して天気情報を取得する
 func GetWeather() (string, error) {
-	err := godotenv.Load("../.env")
+	// err := godotenv.Load(".env")
 
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
+
 	wk := os.Getenv("WEATHER_KEY")
 
 	//都市「東京」、言語「日本語」、温度単位「`C」に設定

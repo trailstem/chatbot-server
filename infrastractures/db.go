@@ -7,17 +7,16 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
-
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 )
 
 // DB DSN取得処理
 func getDSN() string {
 	// //local用相対パス
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// err := godotenv.Load(".env")
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 	dbURL := os.Getenv("JAWSDB_URL")
 	// dbURL := os.Getenv("LOCAL_MYSQL")
 	//フォーマット出力した文字列を返す

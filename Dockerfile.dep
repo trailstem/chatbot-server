@@ -3,12 +3,21 @@ FROM golang:1.17-alpine as builder
 # 作業ディレクトリを設定
 WORKDIR /app
 # アップデートとgitのインストール 
-RUN apk update && apk add git --no-cache git curl
+RUN apk update && apk add git --no-cache git curl 
+RUN apk update && apk add bash
+
 COPY . .
 # 実行コマンドを設定
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-w" -a -o /main ./cmd
 
+# lsコマンドを追加
+RUN ls -a ./cmd
+
 #ビルド後アプリ実行
-FROM scratch
-COPY --from=builder /app/main /main
+FROM alpine:3.9
+RUN apk update && apk add bash
+COPY . .
+COPY --from=builder /main ./
 ENTRYPOINT ["/main"]
+
+
