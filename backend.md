@@ -1,44 +1,22 @@
-# speakbot-backend
+# chatbot-server
 
-# Dockerfile.dep 検証用コマンド
+### Dockerfile.dep 検証用コマンド
 
+```
 docker build --no-cache -t dep_test -f Dockerfile.dep .
 docker run --name dep dep_test
 docker exec -it dep sh
+```
 
-# heroku のデプロイ先作成
-
-- デプロイ先作成
+### heroku のデプロイ先作成
 
 ```
+heroku login
 heroku create -a hogehuga
-```
-
--
-
-```
+// local repositoryをHerokuに接続
 heroku git:remote -a hogehuga
-```
-
-```
+// デプロイ
 git push heroku main
-```
-
-ローカルのメインブランチ以外からのデプロイ
+//local mainBranch以外からのデプロイ
 git push heroku testbranch:main
-
----
-
-# heroku.yml を使用して Docker イメージ
-
-### スタック設定
-
-heroku stack:set container
-
-### push
-
-git push heroku master
-
-### 特定アプリにアドオンを紐づける
-
-heroku addons:create <addon_name> -a <app_name>
+```
