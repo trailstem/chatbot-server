@@ -2,35 +2,46 @@ package infrastractures
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
-	"net/url"
 	"os"
-	"strings"
+	"path/filepath"
 
 	_ "github.com/go-sql-driver/mysql"
-	// "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 // DB DSN取得処理
 func getDSN() string {
-	// //local用相対パス
-	// err := godotenv.Load(".env")
-	dbURL := os.Getenv("DATABASE_URL")
-	// dbURL := os.Getenv("LOCAL_MYSQL")
 
-	u, err := url.Parse(dbURL)
-	if err != nil {
-		log.Fatal("Error parsing JAWSDB_URL:", err)
+	dbUrl := os.Getenv("DATABASE_URL")
+
+	// HerokuのDB接続情報を取得できた場合
+	if dbUrl != "" {
+		return dbUrl
+	} else {
+		// 現在の実行ファイルの絶対パスを取得
+		exe, err := os.Executable()
+		if err != nil {
+			panic(err)
+		}
+		// 現在の実行ファイルのディレクトリを取得
+		/*
+			local     ：/Users/.../.../chatbot/chatbot-server/cmd
+			コンテナ内：/app/cmd
+		*/
+		exeDir := filepath.Dir(exe)
+		// 1つ上のディレクトリを取得
+		parentDir := filepath.Dir(exeDir)
+		// .env ファイルの絶対パスを生成
+		envPath := filepath.Join(parentDir, ".env")
+		// .env ファイルを読み込む
+		err = godotenv.Load(envPath)
+		if err != nil {
+			log.Fatal("環境変数又は .envファイルが読み込めませんでした")
+		}
+		dbUrl = os.Getenv("DATABASE_URL")
+		return dbUrl
 	}
-	//フォーマット出力した文字列を返す
-	user := u.User.Username()
-	password, _ := u.User.Password()
-	host := u.Hostname()
-	port := u.Port()
-	database := strings.TrimPrefix(u.Path, "/")
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database)
-
 }
 
 // データベース接続処理
