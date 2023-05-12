@@ -2,9 +2,12 @@ package infrastractures
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -13,11 +16,21 @@ import (
 // DB DSN取得処理
 func getDSN() string {
 
-	dbUrl := os.Getenv("DATABASE_URL")
+	dbURL := os.Getenv("DATABASE_URL")
 
 	// HerokuのDB接続情報を取得できた場合
-	if dbUrl != "" {
-		return dbUrl
+	if dbURL != "" {
+		u, err := url.Parse(dbURL)
+		if err != nil {
+			log.Fatal("Error parsing JAWSDB_URL:", err)
+		}
+		//フォーマット出力した文字列を返す
+		user := u.User.Username()
+		password, _ := u.User.Password()
+		host := u.Hostname()
+		port := u.Port()
+		database := strings.TrimPrefix(u.Path, "/")
+		return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database)
 	} else {
 		// 現在の実行ファイルの絶対パスを取得
 		exe, err := os.Executable()
@@ -39,8 +52,8 @@ func getDSN() string {
 		if err != nil {
 			log.Fatal("環境変数又は .envファイルが読み込めませんでした")
 		}
-		dbUrl = os.Getenv("DATABASE_URL")
-		return dbUrl
+		dbURL = os.Getenv("DATABASE_URL")
+		return dbURL
 	}
 }
 
