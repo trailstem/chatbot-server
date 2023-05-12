@@ -13,11 +13,11 @@ import (
 // DB DSN取得処理
 func getDSN() string {
 
-	dbUrl := os.Getenv("DATABASE_URL")
+	dbURL := os.Getenv("DATABASE_URL")
 
 	// HerokuのDB接続情報を取得できた場合
-	if dbUrl != "" {
-		return dbUrl
+	if dbURL != "" {
+		return dbURL
 	} else {
 		// 現在の実行ファイルの絶対パスを取得
 		exe, err := os.Executable()
@@ -37,10 +37,10 @@ func getDSN() string {
 		// .env ファイルを読み込む
 		err = godotenv.Load(envPath)
 		if err != nil {
-			log.Fatal("環境変数又は .envファイルが読み込めませんでした")
+			log.Fatal("サーバ設定ファイル又は .envファイルが読み込めませんでした")
 		}
-		dbUrl = os.Getenv("DATABASE_URL")
-		return dbUrl
+		dbURL = os.Getenv("DATABASE_URL")
+		return dbURL
 	}
 }
 
