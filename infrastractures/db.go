@@ -17,21 +17,8 @@ func getDSN() string {
 
 	// HerokuのDB接続情報を取得できた場合
 	if dbURL != "" {
-		// u, err := url.Parse(dbURL)
-		// if err != nil {
-		// 	log.Fatal("Error parsing JAWSDB_URL:", err)
-		// }
-		// //フォーマット出力した文字列を返す
-		// user := u.User.Username()
-		// password, _ := u.User.Password()
-		// host := u.Hostname()
-		// port := u.Port()
-		// database := strings.TrimPrefix(u.Path, "/")
-		// return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database)
 		return dbURL
-
 	} else {
-
 		// 現在の実行ファイルの絶対パスを取得
 		exe, err := os.Executable()
 		if err != nil {
@@ -50,7 +37,7 @@ func getDSN() string {
 		// .env ファイルを読み込む
 		err = godotenv.Load(envPath)
 		if err != nil {
-			log.Fatal("環境変数又は .envファイルが読み込めませんでした")
+			log.Fatal("サーバ設定ファイル又は .envファイルが読み込めませんでした")
 		}
 		dbURL = os.Getenv("DATABASE_URL")
 		return dbURL
