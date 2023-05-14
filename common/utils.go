@@ -2,8 +2,12 @@ package common
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/trailstem/chatbot-server/domain"
 )
 
 // 現在時刻（JST）取得処理
@@ -15,9 +19,13 @@ func GetNowTime() string {
 		return ""
 	}
 	// JSTで現在時刻を取得
+	t := time.Now().In(location)            // 現在時刻をJSTで取得
+	formattedTime := t.Format(time.RFC3339) // ISO 8601形式にフォーマット
 
-	timestampString := time.Now().In(location).Format("2006-01-02 15:04:05")
-	return timestampString
+	// 正規表現でタイムゾーン情報を削除
+	re := regexp.MustCompile(`[-+]\d{2}:\d{2}$`)
+	formattedTime = re.ReplaceAllString(formattedTime, "")
+	return formattedTime
 }
 
 // SetNowTimeを実装
@@ -40,10 +48,21 @@ func SetNowTime() string {
 
 // 「。」で改行「\n」に変換する処理
 func ReplacePeriodWithNewline(text string) string {
-
 	replacer := strings.NewReplacer(
 		"。", "。\n",
 	)
 	covText := replacer.Replace(text)
 	return covText
+}
+
+// 指定のステータスコードとメッセージでエラー応答を送信
+func RespondWithError(c *gin.Context, status int, message string, userReq *domain.HistoryList,
+	err error) {
+	// エラー内容を出力
+	if err != nil {
+		c.JSON(status, gin.H{"error": message + ": " + err.Error()})
+	} else {
+		// エラー内容がない場合はチャットデータを設定
+		c.JSON(status, gin.H{"response": userReq})
+	}
 }
