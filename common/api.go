@@ -27,7 +27,7 @@ func GetWeather() (string, error) {
 	if err != nil {
 		return "", err
 	}
-
+	// レスポンスのボディを閉じる
 	defer res.Body.Close()
 
 	// レスポンスの処理
@@ -39,8 +39,8 @@ func GetWeather() (string, error) {
 		return "", err
 	}
 
+	// 天気情報を取得
 	description := weatherData.Weather[0].Description
-	fmt.Println(description)
 	return description, nil
 }
 
@@ -50,6 +50,7 @@ func ChatGPT(userInput string) (string, error) {
 	// envからOPEN_API取得
 	oiKey := os.Getenv("OPEN_API")
 	client := openai.NewClient(oiKey)
+	// チャットボットとのやりとりを行う
 	resp, err := client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
@@ -67,7 +68,6 @@ func ChatGPT(userInput string) (string, error) {
 		return "", err
 	}
 
-	fmt.Println(resp.Choices[0].Message.Content)
 	resText := resp.Choices[0].Message.Content
 	//画面に表示しやすいように「.」「。」で改行して返却
 	return ReplacePeriodWithNewline(resText), nil

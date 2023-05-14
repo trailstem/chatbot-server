@@ -2,21 +2,15 @@ package main
 
 import (
 	"os"
-	"time"
 
 	"github.com/trailstem/chatbot-server/infrastractures"
 )
 
-type HistoryList struct {
-	UserInput         string    `json:"user_input"`
-	BotResponse       string    `json:"bot_response"`
-	ResponseTimestamp time.Time `json:"response_timestamp"`
-}
-
 func main() {
 
+	// ルーティング設定
 	r := infrastractures.SetupRouter()
-
+	// 環境変数PORTが設定されていない場合は8080を使用
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"

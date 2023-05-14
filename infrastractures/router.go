@@ -12,17 +12,20 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
+// SetupRouter ルーティング設定
 func SetupRouter() *gin.Engine {
 
+	// デフォルトのミドルウェアを使用
 	r := gin.New()
 	// CORS対応
 	r.Use(cors.New(middleware.SetCORS()))
 
 	// DB接続（MySQL）
 	conn, err := ConnectDB()
-
 	if err != nil {
-		fmt.Println(conn, err)
+		// DB接続に失敗した場合はエラーを出力して終了
+		fmt.Println(err)
+		panic(err)
 	}
 
 	//repositoryインスタンス生成
@@ -38,7 +41,9 @@ func SetupRouter() *gin.Engine {
 			"message": "Hello World!",
 		})
 	})
+	// botとのやりとり
 	r.POST("/chat", speakBotController.CreateChatData)
+	// 過去10件のやりとりを取得
 	r.GET("/history/list", speakBotController.FindAChatDataList)
 	return r
 }

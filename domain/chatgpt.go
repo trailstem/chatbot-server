@@ -14,12 +14,15 @@ type OpenAIReq struct {
 	Model    string    `json:"model"`    // モデル指定
 	Messages []Message `json:"messages"` // request用メッセージ配列
 }
+
+// Response用
 type Choice struct {
 	Index        int     `json:"index"`         // 選択肢インデックス
 	Message      Message `json:"message"`       // レスポンスメッセージ
 	FinishReason string  `json:"finish_reason"` // 終了理由
 }
 
+// Usage用
 type Usage struct {
 	PromptTokens     int `json:"prompt_tokens"`     // プロンプトトークン数
 	CompletionTokens int `json:"completion_tokens"` // コンプリーショントークン数
