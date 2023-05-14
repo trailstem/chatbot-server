@@ -6,22 +6,23 @@ import (
 	"github.com/trailstem/chatbot-server/domain"
 )
 
+// ユースケースのインターフェース
 type HistroyListUsecase struct {
 	historyListRepo gateways.SpeakBotRepo
 }
 
+// コンストラクタ
 func NewHistoryListUsecase(historyListRepo gateways.SpeakBotRepo) *HistroyListUsecase {
 	return &HistroyListUsecase{
 		historyListRepo: historyListRepo,
 	}
 }
 
-// 実際のロジック処理を記載
+// チャットデータ作成する実際のロジック
 func (u *HistroyListUsecase) CreateChatData(userInput *domain.HistoryList) error {
-
 	//取得した現在時刻を設定
 	userInput.ResponseTimestamp = common.GetNowTime()
-
+	//repositoryのCreateChatDataを呼び出し
 	return u.historyListRepo.CreateChatData(userInput)
 }
 

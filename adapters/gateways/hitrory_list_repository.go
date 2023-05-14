@@ -23,7 +23,7 @@ func (r *HisoryListRepository) CreateChatData(userInput *domain.HistoryList) err
 	if err != nil {
 		return err
 	}
-
+	// 実行
 	_, err = stmt.Exec(userInput.UserInput, userInput.BotResponse, userInput.ResponseTimestamp)
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func (r *HisoryListRepository) FindChatDataList() (*[]domain.HistoryList, error)
 	var historyList []domain.HistoryList
 	for rows.Next() {
 		var history domain.HistoryList
-
+		// 取得したデータを構造体にバインド
 		err := rows.Scan(&history.UserInput, &history.BotResponse, &history.ResponseTimestamp)
 		if err != nil {
 			return nil, err
