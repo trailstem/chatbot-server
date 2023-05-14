@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strings"
 
 	// "github.com/joho/godotenv"
 	"github.com/sashabaranov/go-openai"
@@ -70,10 +69,6 @@ func ChatGPT(userInput string) (string, error) {
 
 	fmt.Println(resp.Choices[0].Message.Content)
 	resText := resp.Choices[0].Message.Content
-	//画面に表示しやすいように「.」「。」で改行追加
-	replacer := strings.NewReplacer(
-		"。", "。\n",
-	)
-	resT := replacer.Replace(resText)
-	return resT, nil
+	//画面に表示しやすいように「.」「。」で改行して返却
+	return ReplacePeriodWithNewline(resText), nil
 }
