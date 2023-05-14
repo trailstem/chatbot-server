@@ -10,13 +10,15 @@ import (
 	"github.com/trailstem/chatbot-server/usecases"
 )
 
+// コントローラーのインターフェース
 type historyListController struct {
-	// historyListUsecase usecases.HistroyListUsecaseを設定する
+	// ユースケースのインターフェース
 	historyListUsecase usecases.HistroyListUsecase
 }
 
 // コンストラクタ
 func NewHistoryListController(histroyListUsecase *usecases.HistroyListUsecase) *historyListController {
+	// コントローラーのインスタンスを生成
 	return &historyListController{
 		historyListUsecase: *histroyListUsecase,
 	}
@@ -24,72 +26,66 @@ func NewHistoryListController(histroyListUsecase *usecases.HistroyListUsecase) *
 
 // ユーザからの入力情報をもとにチャットデータを作成する
 func (u *historyListController) CreateChatData(c *gin.Context) {
-	var userInput domain.HistoryList
-	err := c.BindJSON(&userInput)
+	var userReq domain.HistoryList
+	err := c.BindJSON(&userReq)
 	if err != nil {
-		respondWithError(c, 400, "ユーザの入力をバインドできませんでした", &userInput, err)
+		common.RespondWithError(c, 400, "ユーザの入力をバインドできませんでした", &userReq, err)
 		return
 	}
 
 	//バリデーションチェック
-	err = validation.Validate(userInput.UserInput,
+	err = validation.Validate(userReq.UserInput,
 		validation.Required,
 	)
 	if err != nil {
-		respondWithError(c, 400, "質問したい内容を入力してください", &userInput, err)
+		common.RespondWithError(c, 400, "質問したい内容を入力してください", &userReq, err)
 		return
 	}
 
-	switch userInput.UserInput {
+	// ユーザの入力によってチャットボットの応答を変える
+	switch userReq.UserInput {
+
 	case "こんにちは":
-		userInput.BotResponse = "こんにちは。"
+		userReq.BotResponse = "こんにちは。"
+
 	case "今何時？":
 		nowTime := common.SetNowTime()
-		userInput.BotResponse = fmt.Sprintf("%sです", nowTime)
+		userReq.BotResponse = fmt.Sprintf("%sです", nowTime)
+
 	case "今日の東京の天気は？":
+		// 天気情報を取得
 		currentWeather, err := common.GetWeather()
 		if err != nil {
-			respondWithError(c, 400, "天気情報の取得に失敗しました", &userInput, err)
+			common.RespondWithError(c, 400, "天気情報の取得に失敗しました", &userReq, err)
 			return
 		}
-		userInput.BotResponse = fmt.Sprintf("%sです", currentWeather)
+		userReq.BotResponse = fmt.Sprintf("%sです", currentWeather)
+
 	default:
-		res, err := common.ChatGPT(userInput.UserInput)
+		// ChatGPTを使用して、応答テキスト生成
+		res, err := common.ChatGPT(userReq.UserInput)
 		if err != nil {
-			respondWithError(c, 400, "ChatGPTの使用に失敗しました", &userInput, err)
+			common.RespondWithError(c, 400, "ChatGPTの使用に失敗しました", &userReq, err)
 			return
 		}
-		userInput.BotResponse = res
+		userReq.BotResponse = res
 	}
 
-	err = u.historyListUsecase.CreateChatData(&userInput)
+	// チャットデータ作成
+	err = u.historyListUsecase.CreateChatData(&userReq)
 	if err != nil {
-		respondWithError(c, 400, "チャットデータ作成に失敗しました", &userInput, err)
+		common.RespondWithError(c, 400, "チャットデータ作成に失敗しました", &userReq, err)
 		return
 	}
-
-	c.JSON(200, gin.H{"response": userInput})
-}
-
-// respondWithError sends an error response with the specified status code and message.
-func respondWithError(c *gin.Context, status int, message string, userInput *domain.HistoryList,
-	err error) {
-	if err != nil {
-		c.JSON(status, gin.H{"error": message + ": " + err.Error()})
-	} else {
-		c.JSON(status, gin.H{"response": userInput})
-	}
+	c.JSON(200, gin.H{"response": userReq})
 }
 
 // チャットボットとの過去10件のやりとりを取得する
 func (u *historyListController) FindAChatDataList(c *gin.Context) {
+	// 実際に過去10件のやりとりを取得する
 	historyList, err := u.historyListUsecase.FindChatDataList()
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 	}
-
-	//histryListの
-
 	c.JSON(200, gin.H{"history_list": historyList})
-
 }
