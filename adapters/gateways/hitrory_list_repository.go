@@ -48,11 +48,11 @@ func (r *HisoryListRepository) FindChatDataList() (*[]domain.HistoryList, error)
 		if err != nil {
 			return nil, err
 		}
-		// timestamp, err := time.Parse("2006-01-02 15:04:05", timestampStr)
-		// if err != nil {
-		// 	return nil, err
-		// }
-		// history.ResponseTimestamp = timestamp
+		timestamp, err := time.Parse("2006-01-02 15:04:05", timestampStr)
+		if err != nil {
+			return nil, err
+		}
+		history.ResponseTimestamp = timestamp
 		historyList = append(historyList, history)
 	}
 	return &historyList, nil

@@ -41,6 +41,9 @@ func (u *historyListController) CreateChatData(c *gin.Context) {
 	case "こんにちは":
 		//「こんにちは」に適したレスポンスを登録する
 		userInput.BotResponse = "こんにちは。"
+		jst := common.GetNowTime()
+		//取得した現在時刻を設定
+		userInput.ResponseTimestamp = jst
 		err = u.historyListUsecase.CreateChatData(&userInput)
 	case "今何時？":
 		//「今何時？」の返答として、リクエスト時刻を登録・返却する
@@ -51,6 +54,9 @@ func (u *historyListController) CreateChatData(c *gin.Context) {
 		userInput.ResponseTimestamp = jst
 		err = u.historyListUsecase.CreateChatData(&userInput)
 	case "今日の東京の天気は？":
+		jst := common.GetNowTime()
+		//取得した現在時刻を設定
+		userInput.ResponseTimestamp = jst
 		//OpenWeatherAPIを使用して天気情報を取得する
 		currentWeather, err := common.GetWeather()
 
@@ -65,11 +71,26 @@ func (u *historyListController) CreateChatData(c *gin.Context) {
 			return
 		}
 	default:
-		c.JSON(400, gin.H{"error": "現在は「「こんにちは」「今何時？」「今日の東京の天気は？」のみ対応しています"})
-		//switchを抜ける
+
+		//Open AIのChatGPT使用
+		res, err := common.ChatGPT(userInput.UserInput)
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		userInput.BotResponse = res
+		jst := common.GetNowTime()
+		//取得した現在時刻を設定
+		userInput.ResponseTimestamp = jst
+		err = u.historyListUsecase.CreateChatData(&userInput)
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, gin.H{"response": userInput})
 		return
 	}
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
