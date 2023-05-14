@@ -33,7 +33,7 @@ func (r *HisoryListRepository) CreateChatData(userInput *domain.HistoryList) err
 
 func (r *HisoryListRepository) FindChatDataList() (*[]domain.HistoryList, error) {
 	//history_listテーブルからresponse_timestampの降順でソートして10件取得
-	rows, err := r.db.Query("SELECT * FROM history_list ORDER BY response_timestamp DESC LIMIT 10")
+	rows, err := r.db.Query("SELECT user_input, bot_response, response_timestamp FROM history_list ORDER BY response_timestamp DESC LIMIT 10")
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (r *HisoryListRepository) FindChatDataList() (*[]domain.HistoryList, error)
 	for rows.Next() {
 		var history domain.HistoryList
 
-		err := rows.Scan(&history.ID, &history.UserInput, &history.BotResponse, &history.ResponseTimestamp)
+		err := rows.Scan(&history.UserInput, &history.BotResponse, &history.ResponseTimestamp)
 		if err != nil {
 			return nil, err
 		}
