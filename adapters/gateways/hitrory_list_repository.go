@@ -2,7 +2,6 @@ package gateways
 
 import (
 	"database/sql"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/trailstem/chatbot-server/domain"
@@ -24,7 +23,8 @@ func (r *HisoryListRepository) CreateChatData(userInput *domain.HistoryList) err
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(userInput.UserInput, userInput.BotResponse, time.Now())
+
+	_, err = stmt.Exec(userInput.UserInput, userInput.BotResponse, userInput.ResponseTimestamp)
 	if err != nil {
 		return err
 	}
@@ -42,17 +42,12 @@ func (r *HisoryListRepository) FindChatDataList() (*[]domain.HistoryList, error)
 	var historyList []domain.HistoryList
 	for rows.Next() {
 		var history domain.HistoryList
-		var timestampStr string
 
-		err := rows.Scan(&history.ID, &history.UserInput, &history.BotResponse, &timestampStr)
+		err := rows.Scan(&history.ID, &history.UserInput, &history.BotResponse, &history.ResponseTimestamp)
 		if err != nil {
 			return nil, err
 		}
-		timestamp, err := time.Parse("2006-01-02 15:04:05", timestampStr)
-		if err != nil {
-			return nil, err
-		}
-		history.ResponseTimestamp = timestamp
+
 		historyList = append(historyList, history)
 	}
 	return &historyList, nil
