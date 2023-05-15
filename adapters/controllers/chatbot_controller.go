@@ -38,7 +38,7 @@ func (u *historyListController) CreateChatData(c *gin.Context) {
 		validation.Required,
 	)
 	if err != nil {
-		common.RespondWithError(c, 400, "質問したい内容を入力してください", &userReq, err)
+		common.RespondWithError(c, 400, "チャットしたい内容を入力してください", &userReq, err)
 		return
 	}
 
