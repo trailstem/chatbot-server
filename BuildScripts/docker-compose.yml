@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  #backendの設定
+  chatbot-server:
+    build:
+      context: ./chatbot-server
+      dockerfile: ./Dockerfile.backend
+    networks:
+      - chatbot-network
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./chatbot-server:/app
+    restart: always
+  
+  #frontendの設定
+  chatbot-client:
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    build:
+      context: ./chatbot-client
+      dockerfile: ./Dockerfile
+    command: sh -c "npm install && npm start"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./chatbot-client:/app
+
+
+    restart: always
+
+  #dbの設定
+  chatbot-db:
+    build:
+      context: ./chatbot-server
+      dockerfile: ./Dockerfile.db
+    ports:
+      - "3306:3306"
+    volumes:
+      - chatbot-volume:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    restart: always
+    
+    networks:
+      - chatbot-network
+networks:
+  chatbot-network:
+
+volumes:
+  chatbot-volume:
