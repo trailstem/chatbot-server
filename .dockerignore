@@ -9,6 +9,7 @@
 *.trace
 *.cove
 img
+.git
 
 # キャッシュを無視する
 go/pkg/
