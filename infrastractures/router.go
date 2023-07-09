@@ -27,7 +27,6 @@ func SetupRouter() *gin.Engine {
 		fmt.Println(err)
 		panic(err)
 	}
-
 	//repositoryインスタンス生成
 	speakBotRepo := gateways.NewHistoryListRepository(conn)
 	// usecaseのインスタンス生成
